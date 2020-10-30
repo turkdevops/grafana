@@ -29,7 +29,6 @@ const dummyProps: ExploreProps = {
     queries: false,
     range: false,
     mode: false,
-    ui: false,
   },
   refreshExplore: jest.fn(),
   scanning: false,
@@ -51,11 +50,6 @@ const dummyProps: ExploreProps = {
       from: 'now-6h',
       to: 'now',
     },
-  },
-  initialUI: {
-    showingTable: false,
-    showingGraph: false,
-    showingLogs: false,
   },
   isLive: false,
   syncedTimes: false,
@@ -107,6 +101,7 @@ const dummyProps: ExploreProps = {
   showLogs: true,
   showTable: true,
   showTrace: true,
+  splitOpen: (() => {}) as any,
 };
 
 const setupErrors = (hasRefId?: boolean) => {

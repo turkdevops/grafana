@@ -291,7 +291,7 @@ export abstract class DataSourceApi<
    *
    * Note: `plugin.json` must also define `live: true`
    *
-   * @experimental
+   * @alpha -- experimental
    */
   channelSupport?: LiveChannelSupport;
 }
@@ -331,6 +331,7 @@ export enum DataSourceStatus {
   Disconnected,
 }
 
+// TODO: not really needed but used as type in some data sources and in DataQueryRequest
 export enum ExploreMode {
   Logs = 'Logs',
   Metrics = 'Metrics',
@@ -469,7 +470,7 @@ export interface DataQueryRequest<TQuery extends DataQuery = DataQuery> {
   // Explore state used by various datasources
   liveStreaming?: boolean;
   /**
-   * @deprecated showingGraph and showingTable are always set to true and set to true
+   * @deprecated showingGraph and showingTable are always set to true
    */
   showingGraph?: boolean;
   showingTable?: boolean;
@@ -498,6 +499,7 @@ export interface QueryHint {
 
 export interface MetricFindValue {
   text: string;
+  value?: string | number;
   expandable?: boolean;
 }
 
@@ -598,6 +600,6 @@ export abstract class LanguageProvider {
    * Returns startTask that resolves with a task list when main syntax is loaded.
    * Task list consists of secondary promises that load more detailed language features.
    */
-  abstract start: () => Promise<any[]>;
+  abstract start: () => Promise<Array<Promise<any>>>;
   startTask?: Promise<any[]>;
 }

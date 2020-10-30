@@ -1,4 +1,4 @@
-import * as jestCLI from 'jest-cli';
+import { runCLI } from '@jest/core';
 import { useSpinner } from '../../utils/useSpinner';
 import { loadJestPluginConfig } from '../../../config/jest.plugin.config';
 
@@ -8,9 +8,17 @@ export interface PluginTestOptions {
   watch: boolean;
   testPathPattern?: string;
   testNamePattern?: string;
+  maxWorkers?: string;
 }
 
-export const testPlugin = ({ updateSnapshot, coverage, watch, testPathPattern, testNamePattern }: PluginTestOptions) =>
+export const testPlugin = ({
+  updateSnapshot,
+  coverage,
+  watch,
+  testPathPattern,
+  testNamePattern,
+  maxWorkers,
+}: PluginTestOptions) =>
   useSpinner('Running tests', async () => {
     const testConfig = loadJestPluginConfig();
 
@@ -22,10 +30,11 @@ export const testPlugin = ({ updateSnapshot, coverage, watch, testPathPattern, t
       testPathPattern: testPathPattern ? [testPathPattern] : [],
       testNamePattern: testNamePattern ? [testNamePattern] : [],
       passWithNoTests: true,
+      maxWorkers,
     };
 
     // @ts-ignore
-    const runJest = () => jestCLI.runCLI(cliConfig, [process.cwd()]);
+    const runJest = () => runCLI(cliConfig, [process.cwd()]);
 
     if (watch) {
       runJest();

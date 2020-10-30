@@ -1,18 +1,19 @@
 import React from 'react';
 import uPlot from 'uplot';
 import { DataFrame, FieldColor, TimeRange, TimeZone } from '@grafana/data';
-import { NullValuesMode } from '../../../../../public/app/plugins/panel/graph3/types';
 
-export enum MicroPlotAxisSide {
-  top = 0,
-  right = 1,
-  bottom = 2,
-  left = 3,
+export type NullValuesMode = 'null' | 'connected' | 'asZero';
+
+export enum AxisSide {
+  Top,
+  Right,
+  Bottom,
+  Left,
 }
 
 interface AxisConfig {
   label: string;
-  side: number;
+  side: AxisSide;
   grid: boolean;
   width: number;
 }
@@ -55,9 +56,13 @@ export interface PlotPluginProps {
 
 export interface PlotProps {
   data: DataFrame;
-  width: number;
-  height: number;
   timeRange: TimeRange;
   timeZone: TimeZone;
-  children: React.ReactNode[];
+  width: number;
+  height: number;
+  children?: React.ReactNode | React.ReactNode[];
+  /** Callback performed when uPlot data is updated */
+  onDataUpdate?: (data: uPlot.AlignedData) => {};
+  /** Callback performed when uPlot is (re)initialized */
+  onPlotInit?: () => {};
 }
