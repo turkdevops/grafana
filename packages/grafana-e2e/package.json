@@ -48,7 +48,7 @@
     "@grafana/tsconfig": "^1.0.0-rc1",
     "@mochajs/json-file-reporter": "^1.2.0",
     "blink-diff": "1.0.13",
-    "commander": "5.0.0",
+    "commander": "6.2.0",
     "cypress": "^4.12.1",
     "cypress-file-upload": "^4.0.7",
     "execa": "4.0.0",
