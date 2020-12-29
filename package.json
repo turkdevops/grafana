@@ -222,7 +222,7 @@
     "@types/react-virtualized-auto-sizer": "1.0.0",
     "@types/sockjs-client": "^1.1.1",
     "@types/uuid": "8.3.0",
-    "@welldone-software/why-did-you-render": "4.0.6",
+    "@welldone-software/why-did-you-render": "6.0.4",
     "abortcontroller-polyfill": "1.4.0",
     "angular": "1.8.2",
     "angular-bindonce": "0.3.1",

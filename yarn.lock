@@ -8568,10 +8568,10 @@
     text-table "^0.2.0"
     webpack-log "^1.1.2"
 
-"@welldone-software/why-did-you-render@4.0.6":
-  version "4.0.6"
-  resolved "https://registry.yarnpkg.com/@welldone-software/why-did-you-render/-/why-did-you-render-4.0.6.tgz#51dc83be0ad4a9fe5faf7e4e93e3c8a386a57f8c"
-  integrity sha512-khH11lsu0MIV0aTRaH0n/80AwbulIoaXLu0mdCDwpYNjxbKhH3ypEFgsWdQyN0a+2IMVwC290icQ1ONojw+27A==
+"@welldone-software/why-did-you-render@6.0.4":
+  version "6.0.4"
+  resolved "https://registry.yarnpkg.com/@welldone-software/why-did-you-render/-/why-did-you-render-6.0.4.tgz#f8787a603b94fe0ef8aa824aecefd72b0a6c9e2a"
+  integrity sha512-hOExlpwqPK/A0XRqgg42jSpbOb6AJBdgrI/X3BRj65ItQks0KS/nIT8HWPt8rR+BJb6OD5bm+vc1pcWSmxwd6A==
   dependencies:
     lodash "^4"
 
@@ -29765,6 +29765,11 @@ yargs-parser@^15.0.0:
   dependencies:
     camelcase "^5.0.0"
     decamelize "^1.2.0"
+
+yargs-parser@^20.2.2:
+  version "20.2.4"
+  resolved "https://registry.yarnpkg.com/yargs-parser/-/yargs-parser-20.2.4.tgz#b42890f14566796f85ae8e3a25290d205f154a54"
+  integrity sha512-WOkpgNhPTlE73h4VFAFsOnomJVaovO8VqLDzy5saChRBFQFBoMYirowyW+Q9HB4HFF4Z7VZTiG3iSzJJA29yRA==
 
 yargs-parser@^20.2.2:
   version "20.2.4"
