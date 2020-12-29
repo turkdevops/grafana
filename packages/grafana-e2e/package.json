@@ -32,7 +32,7 @@
   "devDependencies": {
     "@rollup/plugin-commonjs": "11.0.2",
     "@rollup/plugin-node-resolve": "7.1.1",
-    "@types/node": "13.7.7",
+    "@types/node": "14.14.16",
     "@types/rollup-plugin-visualizer": "2.6.0",
     "rollup": "2.0.6",
     "rollup-plugin-copy": "3.3.0",
