@@ -2,6 +2,7 @@
 
 The open-source platform for monitoring and observability.
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/50908124ec1245069562c839cfd1cfc1)](https://app.codacy.com/gh/turkdevops/grafana?utm_source=github.com&utm_medium=referral&utm_content=turkdevops/grafana&utm_campaign=Badge_Grade)
 [![License](https://img.shields.io/github/license/grafana/grafana)](LICENSE)
 [![Circle CI](https://img.shields.io/circleci/build/gh/grafana/grafana)](https://circleci.com/gh/grafana/grafana)
 [![Go Report Card](https://goreportcard.com/badge/github.com/grafana/grafana)](https://goreportcard.com/report/github.com/grafana/grafana)
