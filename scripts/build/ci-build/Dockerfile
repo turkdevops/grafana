@@ -83,7 +83,7 @@ RUN mv golangci-lint-${GOLANGCILINT_VERSION}-linux-amd64/golangci-lint /tmp/
 
 # Base image to crossbuild grafana.
 # Use old Debian (this has support into 2022) in order to ensure binary compatibility with older glibc's.
-FROM debian:stretch-20201012
+FROM debian:9
 
 ENV GOVERSION=1.15.5 \
     PATH=/usr/local/go/bin:$PATH \
