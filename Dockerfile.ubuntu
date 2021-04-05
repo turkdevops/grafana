@@ -29,7 +29,7 @@ COPY pkg pkg/
 
 RUN go run build.go build
 
-FROM ubuntu:20.04
+FROM ubuntu:groovy-20210325
 
 LABEL maintainer="Grafana team <hello@grafana.com>"
 EXPOSE 3000
