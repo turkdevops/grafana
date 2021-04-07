@@ -1,4 +1,4 @@
-FROM ubuntu
+FROM ubuntu:rolling
 
 ARG REPO_CONFIG=grafana.list.oss
 ARG PACKAGE=grafana
