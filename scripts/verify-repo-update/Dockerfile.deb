@@ -1,4 +1,4 @@
-FROM ubuntu
+FROM ubuntu:20.10
 
 ARG REPO_CONFIG=grafana.list.oss
 ARG PACKAGE=grafana
