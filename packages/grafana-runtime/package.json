@@ -28,7 +28,7 @@
   },
   "devDependencies": {
     "@grafana/tsconfig": "^1.0.0-rc1",
-    "@types/systemjs": "^0.20.6",
+    "@types/systemjs": "^6.1.0",
     "lodash": "4.17.15",
     "pretty-format": "24.9.0",
     "rollup": "1.6.0",
