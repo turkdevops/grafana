@@ -1,6 +1,6 @@
 ## MySQL with Open Data Set from NYC Open Data (https://data.cityofnewyork.us)
 
-FROM mysql:latest
+FROM mysql:8.0.26
 
 ENV MYSQL_DATABASE="testdata" \
     MYSQL_ROOT_PASSWORD="rootpass" \
