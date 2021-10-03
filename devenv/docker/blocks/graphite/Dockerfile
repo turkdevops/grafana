@@ -1,4 +1,4 @@
-from  ubuntu:14.04
+from  ubuntu:trusty-20190425
 
 run apt-get -y update
 
