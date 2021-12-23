@@ -1,7 +1,7 @@
 
-FROM golang:1 
+FROM golang:1
 ADD main.go /
 WORKDIR /
-RUN go build -o main . 
+RUN go build -o main .
 EXPOSE 3011
 ENTRYPOINT ["/main"]
