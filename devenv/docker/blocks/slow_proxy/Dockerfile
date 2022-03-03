@@ -1,5 +1,5 @@
 
-FROM golang:latest 
+FROM golang:1-bullseye 
 ADD main.go /
 WORKDIR /
 RUN go build -o main . 
