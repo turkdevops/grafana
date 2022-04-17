@@ -4081,29 +4081,22 @@
     react-lifecycles-compat "^3.0.4"
     util-deprecate "^1.0.2"
 
-"@storybook/addon-knobs@5.3.9":
-  version "5.3.9"
-  resolved "https://registry.yarnpkg.com/@storybook/addon-knobs/-/addon-knobs-5.3.9.tgz#b51be01731dd31ad1b883276acdbeabedc0b7095"
-  integrity sha512-blMiksvApq4lGiZM1A8FpwnIOXC0PsBXja0LkWQDDHN+snREzjZV85XLrYdz688RhN/7MTXZXMgsvRMSug/r3g==
+"@storybook/addon-knobs@6.4.0":
+  version "6.4.0"
+  resolved "https://registry.yarnpkg.com/@storybook/addon-knobs/-/addon-knobs-6.4.0.tgz#fa5943ef21826cdc2e20ded74edfdf5a6dc71dcf"
+  integrity sha512-DiH1/5e2AFHoHrncl1qLu18ZHPHzRMMPvOLFz8AWvvmc+VCqTdIaE+tdxKr3e8rYylKllibgvDOzrLjfTNjF+Q==
   dependencies:
-    "@storybook/addons" "5.3.9"
-    "@storybook/api" "5.3.9"
-    "@storybook/client-api" "5.3.9"
-    "@storybook/components" "5.3.9"
-    "@storybook/core-events" "5.3.9"
-    "@storybook/theming" "5.3.9"
-    "@types/react-color" "^3.0.1"
-    copy-to-clipboard "^3.0.8"
-    core-js "^3.0.1"
+    copy-to-clipboard "^3.3.1"
+    core-js "^3.8.2"
     escape-html "^1.0.3"
-    fast-deep-equal "^2.0.1"
-    global "^4.3.2"
-    lodash "^4.17.15"
+    fast-deep-equal "^3.1.3"
+    global "^4.4.0"
+    lodash "^4.17.20"
     prop-types "^15.7.2"
-    qs "^6.6.0"
-    react-color "^2.17.0"
+    qs "^6.10.0"
+    react-colorful "^5.1.2"
     react-lifecycles-compat "^3.0.4"
-    react-select "^3.0.8"
+    react-select "^3.2.0"
 
 "@storybook/addon-storysource@5.3.14":
   version "5.3.14"
@@ -5540,13 +5533,6 @@
   version "2.17.0"
   resolved "https://registry.yarnpkg.com/@types/react-color/-/react-color-2.17.0.tgz#7f3c958bb43ebeedc7e04309576a235d5233ce9d"
   integrity sha512-NQCLW437DXzaV/XvtoH3cBW75f0KQ9ZtFvvXnn7QEudLTR5zGxLdsEhPffrateSizsG2CTml4X+2/2TyEisotQ==
-  dependencies:
-    "@types/react" "*"
-
-"@types/react-color@^3.0.1":
-  version "3.0.1"
-  resolved "https://registry.yarnpkg.com/@types/react-color/-/react-color-3.0.1.tgz#5433e2f503ea0e0831cbc6fd0c20f8157d93add0"
-  integrity sha512-J6mYm43Sid9y+OjZ7NDfJ2VVkeeuTPNVImNFITgQNXodHteKfl/t/5pAR5Z9buodZ2tCctsZjgiMlQOpfntakw==
   dependencies:
     "@types/react" "*"
 
@@ -9229,10 +9215,10 @@ copy-descriptor@^0.1.0:
   resolved "https://registry.yarnpkg.com/copy-descriptor/-/copy-descriptor-0.1.1.tgz#676f6eb3c39997c2ee1ac3a924fd6124748f578d"
   integrity sha1-Z29us8OZl8LuGsOpJP1hJHSPV40=
 
-copy-to-clipboard@^3.0.8, copy-to-clipboard@^3.1.0:
-  version "3.2.0"
-  resolved "https://registry.yarnpkg.com/copy-to-clipboard/-/copy-to-clipboard-3.2.0.tgz#d2724a3ccbfed89706fac8a894872c979ac74467"
-  integrity sha512-eOZERzvCmxS8HWzugj4Uxl8OJxa7T2k1Gi0X5qavwydHIfuSHq2dTD09LOg/XyGq4Zpb5IsR/2OJ5lbOegz78w==
+copy-to-clipboard@^3.0.8, copy-to-clipboard@^3.1.0, copy-to-clipboard@^3.3.1:
+  version "3.3.1"
+  resolved "https://registry.yarnpkg.com/copy-to-clipboard/-/copy-to-clipboard-3.3.1.tgz#115aa1a9998ffab6196f93076ad6da3b913662ae"
+  integrity sha512-i13qo6kIHTTpCm8/Wup+0b1mVWETvu2kIMzKoK8FpkLkFxlt0znUAHcMzox+T8sPlqtZXq3CulEjQHsYiGFJUw==
   dependencies:
     toggle-selection "^1.0.6"
 
@@ -9290,10 +9276,10 @@ core-js@^2.0.0, core-js@^2.4.0:
   resolved "https://registry.yarnpkg.com/core-js/-/core-js-2.6.10.tgz#8a5b8391f8cc7013da703411ce5b585706300d7f"
   integrity sha512-I39t74+4t+zau64EN1fE5v2W31Adtc/REhzWN+gWRRXg6WH5qAsZm62DHpQ1+Yhe4047T55jvzz7MUqF/dBBlA==
 
-core-js@^3.0.1, core-js@^3.0.4:
-  version "3.3.2"
-  resolved "https://registry.yarnpkg.com/core-js/-/core-js-3.3.2.tgz#cd42da1d7b0bb33ef11326be3a721934277ceb42"
-  integrity sha512-S1FfZpeBchkhyoY76YAdFzKS4zz9aOK7EeFaNA2aJlyXyA+sgqz6xdxmLPGXEAf0nF44MVN1kSjrA9Kt3ATDQg==
+core-js@^3.0.1, core-js@^3.0.4, core-js@^3.8.2:
+  version "3.22.0"
+  resolved "https://registry.yarnpkg.com/core-js/-/core-js-3.22.0.tgz#b52007870c5e091517352e833b77f0b2d2b259f3"
+  integrity sha512-8h9jBweRjMiY+ORO7bdWSeWfHhLPO7whobj7Z2Bl0IDo00C228EdGgH7FE4jGumbEjzcFfkfW8bXgdkEDhnwHQ==
 
 core-util-is@1.0.2, core-util-is@~1.0.0:
   version "1.0.2"
@@ -10546,7 +10532,7 @@ dom-css@^2.0.0:
     prefix-style "2.0.1"
     to-camel-case "1.0.0"
 
-dom-helpers@^3.3.1, dom-helpers@^3.4.0:
+dom-helpers@^3.3.1:
   version "3.4.0"
   resolved "https://registry.yarnpkg.com/dom-helpers/-/dom-helpers-3.4.0.tgz#e9b369700f959f62ecde5a6babde4bccd9169af8"
   integrity sha512-LnuPJ+dwqKDIyotW1VzmOZ5TONUN7CwkCR5hrgawTUbkBGYdeoNLZo6nNfGkCrjtE1nXXaj7iMMpDa8/d9WoIA==
@@ -11850,10 +11836,10 @@ fast-deep-equal@^2.0.1:
   resolved "https://registry.yarnpkg.com/fast-deep-equal/-/fast-deep-equal-2.0.1.tgz#7b05218ddf9667bf7f370bf7fdb2cb15fdd0aa49"
   integrity sha1-ewUhjd+WZ79/Nwv3/bLLFf3Qqkk=
 
-fast-deep-equal@^3.0.0, fast-deep-equal@^3.1.1:
-  version "3.1.1"
-  resolved "https://registry.yarnpkg.com/fast-deep-equal/-/fast-deep-equal-3.1.1.tgz#545145077c501491e33b15ec408c294376e94ae4"
-  integrity sha512-8UEa58QDLauDNfpbrX55Q9jrGHThw2ZMdOky5Gl1CDtVeJDPVrG4Jxx1N8jw2gkWaff5UUuX1KJd+9zGe2B+ZA==
+fast-deep-equal@^3.0.0, fast-deep-equal@^3.1.1, fast-deep-equal@^3.1.3:
+  version "3.1.3"
+  resolved "https://registry.yarnpkg.com/fast-deep-equal/-/fast-deep-equal-3.1.3.tgz#3a7d56b559d6cbc3eb512325244e619a65c6c525"
+  integrity sha512-f3qQ9oQy9j2AhBe/H9VC91wLmKBCCU/gDOnKNAYG5hswO7BLKj09Hc5HYNz9cGI++xlpDCIgDaitVs03ATR84Q==
 
 fast-diff@^1.1.2:
   version "1.2.0"
@@ -16623,7 +16609,7 @@ lodash@4.17.15:
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.15.tgz#b447f6670a0455bbfeedd11392eff330ea097548"
   integrity sha512-8xOcRHvCjnocdS5cpwXQXVzmmh5e5+saE2QGoeQmbKmRS6J3VQppPOIt0MnmE+4xlZoumy0GPG0D0MVIQbNA1A==
 
-lodash@4.17.21, lodash@>4.17.4, lodash@^4.0.0, lodash@^4.0.1, lodash@^4.1.1, lodash@^4.15.0, lodash@^4.17.10, lodash@^4.17.11, lodash@^4.17.12, lodash@^4.17.13, lodash@^4.17.14, lodash@^4.17.15, lodash@^4.17.3, lodash@^4.17.4, lodash@^4.17.5, lodash@^4.2.1, lodash@^4.3.0, lodash@^4.7.0, lodash@^4.8.0, lodash@~4.17.10, lodash@~4.17.15, lodash@~4.17.19, lodash@~4.17.21:
+lodash@4.17.21, lodash@>4.17.4, lodash@^4.0.0, lodash@^4.0.1, lodash@^4.1.1, lodash@^4.15.0, lodash@^4.17.10, lodash@^4.17.11, lodash@^4.17.12, lodash@^4.17.13, lodash@^4.17.14, lodash@^4.17.15, lodash@^4.17.20, lodash@^4.17.3, lodash@^4.17.4, lodash@^4.17.5, lodash@^4.2.1, lodash@^4.3.0, lodash@^4.7.0, lodash@^4.8.0, lodash@~4.17.10, lodash@~4.17.15, lodash@~4.17.19, lodash@~4.17.21:
   version "4.17.21"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.21.tgz#679591c564c3bffaae8454cf0b3df370c3d6911c"
   integrity sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==
@@ -18361,6 +18347,11 @@ object-inspect@^1.7.0:
   version "1.7.0"
   resolved "https://registry.yarnpkg.com/object-inspect/-/object-inspect-1.7.0.tgz#f4f6bd181ad77f006b5ece60bd0b6f398ff74a67"
   integrity sha512-a7pEHdh1xKIAgTySUGgLMx/xwDZskN1Ud6egYYN3EdRW4ZMPNEDUTF+hwy2LUC+Bl+SyLXANnwz/jyh/qutKUw==
+
+object-inspect@^1.9.0:
+  version "1.12.0"
+  resolved "https://registry.yarnpkg.com/object-inspect/-/object-inspect-1.12.0.tgz#6e2c120e868fd1fd18cb4f18c31741d0d6e776f0"
+  integrity sha512-Ho2z80bVIvJloH+YzRmpZVQe87+qASmBUKZDWgx9cu+KDrX2ZDH/3tMy+gXbZETVGs2M8YdxObOh7XAtim9Y0g==
 
 object-is@^1.0.1:
   version "1.0.1"
@@ -20710,10 +20701,12 @@ qs@6.7.0:
   resolved "https://registry.yarnpkg.com/qs/-/qs-6.7.0.tgz#41dc1a015e3d581f1621776be31afb2876a9b1bc"
   integrity sha512-VCdBRNFTX1fyE7Nb6FYoURo/SPe62QCaAyzJvUjwRaIsc+NePBEniHlvxFmmX56+HZphIGtV0XeCirBtpDrTyQ==
 
-qs@^6.6.0:
-  version "6.9.0"
-  resolved "https://registry.yarnpkg.com/qs/-/qs-6.9.0.tgz#d1297e2a049c53119cb49cca366adbbacc80b409"
-  integrity sha512-27RP4UotQORTpmNQDX8BHPukOnBP3p1uUJY5UnDhaJB+rMt9iMsok724XL+UHU23bEFOHRMQ2ZhI99qOWUMGFA==
+qs@^6.10.0, qs@^6.6.0:
+  version "6.10.3"
+  resolved "https://registry.yarnpkg.com/qs/-/qs-6.10.3.tgz#d6cde1b2ffca87b5aa57889816c5f81535e22e8e"
+  integrity sha512-wr7M2E0OFRfIfJZjKGieI8lBKb7fRCH4Fv5KNPEs7gJ8jadvotdsS08PzOKR7opXhZ/Xkjtt3WF9g38drmyRqQ==
+  dependencies:
+    side-channel "^1.0.4"
 
 qs@~6.5.2:
   version "6.5.2"
@@ -20999,17 +20992,10 @@ react-color@2.17.0:
     reactcss "^1.2.0"
     tinycolor2 "^1.4.1"
 
-react-color@^2.17.0:
-  version "2.17.3"
-  resolved "https://registry.yarnpkg.com/react-color/-/react-color-2.17.3.tgz#b8556d744f95193468c7061d2aa19180118d4a48"
-  integrity sha512-1dtO8LqAVotPIChlmo6kLtFS1FP89ll8/OiA8EcFRDR+ntcK+0ukJgByuIQHRtzvigf26dV5HklnxDIvhON9VQ==
-  dependencies:
-    "@icons/material" "^0.2.4"
-    lodash "^4.17.11"
-    material-colors "^1.2.1"
-    prop-types "^15.5.10"
-    reactcss "^1.2.0"
-    tinycolor2 "^1.4.1"
+react-colorful@^5.1.2:
+  version "5.5.1"
+  resolved "https://registry.yarnpkg.com/react-colorful/-/react-colorful-5.5.1.tgz#29d9c4e496f2ca784dd2bb5053a3a4340cfaf784"
+  integrity sha512-M1TJH2X3RXEt12sWkpa6hLc/bbYS0H6F4rIqjQZ+RxNBstpY67d9TrFXtqdZwhpmBXcCwEi7stKqFue3ZRkiOg==
 
 react-custom-scrollbars@4.2.1:
   version "4.2.1"
@@ -21222,6 +21208,13 @@ react-input-autosize@^2.2.2:
   dependencies:
     prop-types "^15.5.8"
 
+react-input-autosize@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/react-input-autosize/-/react-input-autosize-3.0.0.tgz#6b5898c790d4478d69420b55441fcc31d5c50a85"
+  integrity sha512-nL9uS7jEs/zu8sqwFE5MAPx6pPkNAriACQ2rGLlqmKr2sPGtN7TXTyDdQt4lbNXVx7Uzadb40x8qotIuru6Rhg==
+  dependencies:
+    prop-types "^15.5.8"
+
 react-inspector@^4.0.0:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/react-inspector/-/react-inspector-4.0.0.tgz#ad73200ca18452aff333df2e2791be4544c422a9"
@@ -21306,10 +21299,10 @@ react-resizable@^1.9.0:
     prop-types "15.x"
     react-draggable "^4.0.3"
 
-react-select@^3.0.8:
-  version "3.0.8"
-  resolved "https://registry.yarnpkg.com/react-select/-/react-select-3.0.8.tgz#06ff764e29db843bcec439ef13e196865242e0c1"
-  integrity sha512-v9LpOhckLlRmXN5A6/mGGEft4FMrfaBFTGAnuPHcUgVId7Je42kTq9y0Z+Ye5z8/j0XDT3zUqza8gaRaI1PZIg==
+react-select@^3.2.0:
+  version "3.2.0"
+  resolved "https://registry.yarnpkg.com/react-select/-/react-select-3.2.0.tgz#de9284700196f5f9b5277c5d850a9ce85f5c72fe"
+  integrity sha512-B/q3TnCZXEKItO0fFN/I0tWOX3WJvi/X2wtdffmwSQVRwg5BpValScTO1vdic9AxlUgmeSzib2hAZAwIUQUZGQ==
   dependencies:
     "@babel/runtime" "^7.4.4"
     "@emotion/cache" "^10.0.9"
@@ -21317,8 +21310,8 @@ react-select@^3.0.8:
     "@emotion/css" "^10.0.9"
     memoize-one "^5.0.0"
     prop-types "^15.6.0"
-    react-input-autosize "^2.2.2"
-    react-transition-group "^2.2.1"
+    react-input-autosize "^3.0.0"
+    react-transition-group "^4.3.0"
 
 react-sizeme@2.5.2:
   version "2.5.2"
@@ -21425,16 +21418,6 @@ react-transition-group@2.6.1:
   integrity sha512-9DHwCy0aOYEe35frlEN68N9ut/THDQBLnVoQuKTvzF4/s3tk7lqkefCqxK2Nv96fOh6JXk6tQtliygk6tl3bQA==
   dependencies:
     dom-helpers "^3.3.1"
-    loose-envify "^1.4.0"
-    prop-types "^15.6.2"
-    react-lifecycles-compat "^3.0.4"
-
-react-transition-group@^2.2.1:
-  version "2.9.0"
-  resolved "https://registry.yarnpkg.com/react-transition-group/-/react-transition-group-2.9.0.tgz#df9cdb025796211151a436c69a8f3b97b5b07c8d"
-  integrity sha512-+HzNTCHpeQyl4MJ/bdE0u6XRMe9+XG/+aL4mCxVN4DnPBQ0/5bfHWPDuOZUzYdMj94daZaZdCCc1Dzt9R/xSSg==
-  dependencies:
-    dom-helpers "^3.4.0"
     loose-envify "^1.4.0"
     prop-types "^15.6.2"
     react-lifecycles-compat "^3.0.4"
@@ -23093,6 +23076,15 @@ side-channel@^1.0.2:
   dependencies:
     es-abstract "^1.17.0-next.1"
     object-inspect "^1.7.0"
+
+side-channel@^1.0.4:
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/side-channel/-/side-channel-1.0.4.tgz#efce5c8fdc104ee751b25c58d4290011fa5ea2cf"
+  integrity sha512-q5XPytqFEIKHkGdiMIrY10mvLRvnQh42/+GoBlFW3b2LXLE2xxJpZFdm94we0BaoV3RwJyGqg5wS7epxTv0Zvw==
+  dependencies:
+    call-bind "^1.0.0"
+    get-intrinsic "^1.0.2"
+    object-inspect "^1.9.0"
 
 signal-exit@^3.0.0, signal-exit@^3.0.2:
   version "3.0.2"
