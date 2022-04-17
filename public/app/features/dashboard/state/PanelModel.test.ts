@@ -23,6 +23,7 @@ describe('PanelModel', () => {
           },
         ],
       },
+      arrayWith2Values: [{ value: 'name' }, { value: 'name2' }],
       showThresholds: true,
     };
 
@@ -42,6 +43,7 @@ describe('PanelModel', () => {
             },
           ],
         },
+        arrayWith2Values: [{ name: 'changed to only one value' }],
       };
 
       modelJson = {
@@ -71,6 +73,10 @@ describe('PanelModel', () => {
       expect(model.getOptions().showThresholds).toBeTruthy();
     });
 
+    it('should apply option defaults but not override if array is changed', () => {
+      expect(model.getOptions().arrayWith2Values.length).toBe(1);
+    });
+
     it('should set model props on instance', () => {
       expect(model.showColumns).toBe(true);
     });
@@ -91,6 +97,11 @@ describe('PanelModel', () => {
     it('getSaveModel should remove defaults', () => {
       const saveModel = model.getSaveModel();
       expect(saveModel.gridPos).toBe(undefined);
+    });
+
+    it('getSaveModel should not remove datasource default', () => {
+      const saveModel = model.getSaveModel();
+      expect(saveModel.datasource).toBe(null);
     });
 
     it('getSaveModel should remove nonPersistedProperties', () => {
@@ -136,18 +147,19 @@ describe('PanelModel', () => {
     });
 
     describe('when changing from angular panel', () => {
-      let tearDownPublished = false;
+      const angularPanel = {
+        scope: {},
+        destroy: jest.fn(),
+      };
 
       beforeEach(() => {
-        model.events.on('panel-teardown', () => {
-          tearDownPublished = true;
-        });
+        model.angularPanel = angularPanel;
         model.changePlugin(getPanelPlugin({ id: 'graph' }));
       });
 
-      it('should teardown / destroy panel so angular panels event subscriptions are removed', () => {
-        expect(tearDownPublished).toBe(true);
-        expect(model.events.getEventCount()).toBe(0);
+      it('should set angularPanel to undefined and call destory', () => {
+        expect(angularPanel.destroy.mock.calls.length).toBe(1);
+        expect(model.angularPanel).toBe(undefined);
       });
     });
 

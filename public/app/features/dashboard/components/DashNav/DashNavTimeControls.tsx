@@ -1,52 +1,74 @@
 // Libaries
 import React, { Component } from 'react';
-import { dateMath } from '@grafana/data';
+import { dateMath, GrafanaTheme } from '@grafana/data';
+import { css } from 'emotion';
 
 // Types
 import { DashboardModel } from '../../state';
-import { LocationState } from 'app/types';
-import { TimeRange, TimeOption, RawTimeRange } from '@grafana/data';
+import { LocationState, CoreEvents } from 'app/types';
+import { TimeRange } from '@grafana/data';
 
 // State
 import { updateLocation } from 'app/core/actions';
 
 // Components
-import { TimePicker, RefreshPicker } from '@grafana/ui';
+import { RefreshPicker, withTheme, stylesFactory, Themeable } from '@grafana/ui';
+import { TimePickerWithHistory } from 'app/core/components/TimePicker/TimePickerWithHistory';
 
 // Utils & Services
-import { getTimeSrv, TimeSrv } from 'app/features/dashboard/services/TimeSrv';
-import { defaultSelectOptions } from '@grafana/ui/src/components/TimePicker/TimePicker';
+import { getTimeSrv } from 'app/features/dashboard/services/TimeSrv';
+import { appEvents } from 'app/core/core';
 
-export interface Props {
-  $injector: any;
+const getStyles = stylesFactory((theme: GrafanaTheme) => {
+  return {
+    container: css`
+      position: relative;
+      display: flex;
+      padding: 2px 2px;
+    `,
+  };
+});
+
+export interface Props extends Themeable {
   dashboard: DashboardModel;
   updateLocation: typeof updateLocation;
   location: LocationState;
 }
+class UnthemedDashNavTimeControls extends Component<Props> {
+  componentDidMount() {
+    // Only reason for this is that sometimes time updates can happen via redux location changes
+    // and this happens before timeSrv has had chance to update state (as it listens to angular route-updated)
+    // This can be removed after timeSrv listens redux location
+    this.props.dashboard.on(CoreEvents.timeRangeUpdated, this.triggerForceUpdate);
+  }
 
-export class DashNavTimeControls extends Component<Props> {
-  timeSrv: TimeSrv = getTimeSrv();
-  $rootScope = this.props.$injector.get('$rootScope');
+  componentWillUnmount() {
+    this.props.dashboard.off(CoreEvents.timeRangeUpdated, this.triggerForceUpdate);
+  }
+
+  triggerForceUpdate = () => {
+    this.forceUpdate();
+  };
 
   get refreshParamInUrl(): string {
     return this.props.location.query.refresh as string;
   }
 
   onChangeRefreshInterval = (interval: string) => {
-    this.timeSrv.setAutoRefresh(interval);
+    getTimeSrv().setAutoRefresh(interval);
     this.forceUpdate();
   };
 
   onRefresh = () => {
-    this.timeSrv.refreshDashboard();
+    getTimeSrv().refreshDashboard();
     return Promise.resolve();
   };
 
   onMoveBack = () => {
-    this.$rootScope.appEvent('shift-time', -1);
+    appEvents.emit(CoreEvents.shiftTime, -1);
   };
   onMoveForward = () => {
-    this.$rootScope.appEvent('shift-time', 1);
+    appEvents.emit(CoreEvents.shiftTime, 1);
   };
 
   onChangeTimePicker = (timeRange: TimeRange) => {
@@ -61,44 +83,29 @@ export class DashNavTimeControls extends Component<Props> {
       to: hasDelay ? 'now-' + panel.nowDelay : adjustedTo,
     };
 
-    this.timeSrv.setTime(nextRange);
+    getTimeSrv().setTime(nextRange);
   };
 
   onZoom = () => {
-    this.$rootScope.appEvent('zoom-out', 2);
-  };
-
-  setActiveTimeOption = (timeOptions: TimeOption[], rawTimeRange: RawTimeRange): TimeOption[] => {
-    return timeOptions.map(option => {
-      if (option.to === rawTimeRange.to && option.from === rawTimeRange.from) {
-        return {
-          ...option,
-          active: true,
-        };
-      }
-      return {
-        ...option,
-        active: false,
-      };
-    });
+    appEvents.emit(CoreEvents.zoomOut, 2);
   };
 
   render() {
-    const { dashboard } = this.props;
+    const { dashboard, theme } = this.props;
     const intervals = dashboard.timepicker.refresh_intervals;
-    const timePickerValue = this.timeSrv.timeRange();
+    const timePickerValue = getTimeSrv().timeRange();
     const timeZone = dashboard.getTimezone();
+    const styles = getStyles(theme);
 
     return (
-      <div className="dashboard-timepicker-wrapper">
-        <TimePicker
+      <div className={styles.container}>
+        <TimePickerWithHistory
           value={timePickerValue}
           onChange={this.onChangeTimePicker}
           timeZone={timeZone}
           onMoveBackward={this.onMoveBack}
           onMoveForward={this.onMoveForward}
           onZoom={this.onZoom}
-          selectOptions={this.setActiveTimeOption(defaultSelectOptions, timePickerValue.raw)}
         />
         <RefreshPicker
           onIntervalChanged={this.onChangeRefreshInterval}
@@ -111,3 +118,5 @@ export class DashNavTimeControls extends Component<Props> {
     );
   }
 }
+
+export const DashNavTimeControls = withTheme(UnthemedDashNavTimeControls);

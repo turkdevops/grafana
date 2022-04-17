@@ -3,12 +3,20 @@ import React, { PureComponent } from 'react';
 import { hot } from 'react-hot-loader';
 import ReactGridLayout, { ItemCallback } from 'react-grid-layout';
 import classNames from 'classnames';
-import { withSize } from 'react-sizeme';
+// @ts-ignore
+import sizeMe from 'react-sizeme';
+
+// Components
+import { AddPanelWidget } from '../components/AddPanelWidget';
+import { DashboardRow } from '../components/DashboardRow';
 
 // Types
 import { GRID_CELL_HEIGHT, GRID_CELL_VMARGIN, GRID_COLUMN_COUNT } from 'app/core/constants';
 import { DashboardPanel } from './DashboardPanel';
 import { DashboardModel, PanelModel } from '../state';
+import { CoreEvents } from 'app/types';
+import { PanelEvents } from '@grafana/data';
+import { panelAdded, panelRemoved } from '../state/PanelModel';
 
 let lastGridWidth = 1200;
 let ignoreNextWidthChange = false;
@@ -54,11 +62,17 @@ function GridWrapper({
     }
   }
 
+  /*
+    Disable draggable if mobile device, solving an issue with unintentionally
+     moving panels. https://github.com/grafana/grafana/issues/18497
+  */
+  const draggable = width <= 420 ? false : isDraggable;
+
   return (
     <ReactGridLayout
       width={lastGridWidth}
       className={className}
-      isDraggable={isDraggable}
+      isDraggable={draggable}
       isResizable={isResizable}
       containerPadding={[0, 0]}
       useCSSTransforms={false}
@@ -77,7 +91,7 @@ function GridWrapper({
   );
 }
 
-const SizedReactLayoutGrid = withSize({ monitorWidth: true })(GridWrapper);
+const SizedReactLayoutGrid = sizeMe({ monitorWidth: true })(GridWrapper);
 
 export interface Props {
   dashboard: DashboardModel;
@@ -92,22 +106,23 @@ export class DashboardGrid extends PureComponent<Props> {
 
   componentDidMount() {
     const { dashboard } = this.props;
-    dashboard.on('panel-added', this.triggerForceUpdate);
-    dashboard.on('panel-removed', this.triggerForceUpdate);
-    dashboard.on('repeats-processed', this.triggerForceUpdate);
-    dashboard.on('view-mode-changed', this.onViewModeChanged);
-    dashboard.on('row-collapsed', this.triggerForceUpdate);
-    dashboard.on('row-expanded', this.triggerForceUpdate);
+
+    dashboard.on(panelAdded, this.triggerForceUpdate);
+    dashboard.on(panelRemoved, this.triggerForceUpdate);
+    dashboard.on(CoreEvents.repeatsProcessed, this.triggerForceUpdate);
+    dashboard.on(PanelEvents.viewModeChanged, this.onViewModeChanged);
+    dashboard.on(CoreEvents.rowCollapsed, this.triggerForceUpdate);
+    dashboard.on(CoreEvents.rowExpanded, this.triggerForceUpdate);
   }
 
   componentWillUnmount() {
     const { dashboard } = this.props;
-    dashboard.off('panel-added', this.triggerForceUpdate);
-    dashboard.off('panel-removed', this.triggerForceUpdate);
-    dashboard.off('repeats-processed', this.triggerForceUpdate);
-    dashboard.off('view-mode-changed', this.onViewModeChanged);
-    dashboard.off('row-collapsed', this.triggerForceUpdate);
-    dashboard.off('row-expanded', this.triggerForceUpdate);
+    dashboard.off(panelAdded, this.triggerForceUpdate);
+    dashboard.off(panelRemoved, this.triggerForceUpdate);
+    dashboard.off(CoreEvents.repeatsProcessed, this.triggerForceUpdate);
+    dashboard.off(PanelEvents.viewModeChanged, this.onViewModeChanged);
+    dashboard.off(CoreEvents.rowCollapsed, this.triggerForceUpdate);
+    dashboard.off(CoreEvents.rowExpanded, this.triggerForceUpdate);
   }
 
   buildLayout() {
@@ -163,7 +178,6 @@ export class DashboardGrid extends PureComponent<Props> {
     for (const panel of this.props.dashboard.panels) {
       panel.resizeDone();
     }
-    this.forceUpdate();
   };
 
   onViewModeChanged = () => {
@@ -231,10 +245,12 @@ export class DashboardGrid extends PureComponent<Props> {
 
   renderPanels() {
     const panelElements = [];
+
     for (const panel of this.props.dashboard.panels) {
       const panelClasses = classNames({ 'react-grid-item--fullscreen': panel.fullscreen });
       const id = panel.id.toString();
       panel.isInView = this.isInView(panel);
+
       panelElements.push(
         <div
           key={id}
@@ -244,18 +260,32 @@ export class DashboardGrid extends PureComponent<Props> {
             this.panelRef[id] = elem;
           }}
         >
-          <DashboardPanel
-            panel={panel}
-            dashboard={this.props.dashboard}
-            isEditing={panel.isEditing}
-            isFullscreen={panel.fullscreen}
-            isInView={panel.isInView}
-          />
+          {this.renderPanel(panel)}
         </div>
       );
     }
 
     return panelElements;
+  }
+
+  renderPanel(panel: PanelModel) {
+    if (panel.type === 'row') {
+      return <DashboardRow panel={panel} dashboard={this.props.dashboard} />;
+    }
+
+    if (panel.type === 'add-panel') {
+      return <AddPanelWidget panel={panel} dashboard={this.props.dashboard} />;
+    }
+
+    return (
+      <DashboardPanel
+        panel={panel}
+        dashboard={this.props.dashboard}
+        isEditing={panel.isEditing}
+        isFullscreen={panel.fullscreen}
+        isInView={panel.isInView}
+      />
+    );
   }
 
   render() {

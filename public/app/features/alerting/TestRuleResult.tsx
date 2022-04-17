@@ -1,10 +1,11 @@
 import React, { PureComponent } from 'react';
-import { JSONFormatter } from 'app/core/components/JSONFormatter/JSONFormatter';
+import { LoadingPlaceholder, JSONFormatter } from '@grafana/ui';
+
 import appEvents from 'app/core/app_events';
 import { CopyToClipboard } from 'app/core/components/CopyToClipboard/CopyToClipboard';
-import { getBackendSrv } from '@grafana/runtime';
 import { DashboardModel } from '../dashboard/state/DashboardModel';
-import { LoadingPlaceholder } from '@grafana/ui';
+import { getBackendSrv } from '@grafana/runtime';
+import { AppEvents } from '@grafana/data';
 
 export interface Props {
   panelId: number;
@@ -49,7 +50,7 @@ export class TestRuleResult extends PureComponent<Props, State> {
   };
 
   onClipboardSuccess = () => {
-    appEvents.emit('alert-success', ['Content copied to clipboard']);
+    appEvents.emit(AppEvents.alertSuccess, ['Content copied to clipboard']);
   };
 
   onToggleExpand = () => {

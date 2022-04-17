@@ -100,16 +100,11 @@ const mapStateToProps = (state: StoreState) => ({
   urlSlug: state.location.routeParams.slug,
   urlType: state.location.routeParams.type,
   urlPanelId: state.location.query.panelId,
-  dashboard: state.dashboard.model as DashboardModel,
+  dashboard: state.dashboard.getModel() as DashboardModel,
 });
 
 const mapDispatchToProps = {
   initDashboard,
 };
 
-export default hot(module)(
-  connect(
-    mapStateToProps,
-    mapDispatchToProps
-  )(SoloPanelPage)
-);
+export default hot(module)(connect(mapStateToProps, mapDispatchToProps)(SoloPanelPage));

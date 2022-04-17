@@ -1,27 +1,30 @@
 // Libraries
-import React from 'react';
-// @ts-ignore
-import Cascader from 'rc-cascader';
-// @ts-ignore
-import PluginPrism from 'slate-prism';
+import React, { ReactNode } from 'react';
 
-// Components
-import QueryField, { TypeaheadInput, QueryFieldState } from 'app/features/explore/QueryField';
+import {
+  ButtonCascader,
+  CascaderOption,
+  SlatePrism,
+  TypeaheadOutput,
+  SuggestionsState,
+  QueryField,
+  TypeaheadInput,
+  BracesPlugin,
+} from '@grafana/ui';
 
 // Utils & Services
 // dom also includes Element polyfills
-import BracesPlugin from 'app/features/explore/slate-plugins/braces';
+import { Plugin, Node } from 'slate';
 
 // Types
-import { LokiQuery } from '../types';
-import { TypeaheadOutput, HistoryItem } from 'app/types/explore';
-import { DataSourceApi, ExploreQueryFieldProps, DataSourceStatus, DOMUtil } from '@grafana/ui';
-import { AbsoluteTimeRange } from '@grafana/data';
+import { DOMUtil } from '@grafana/ui';
+import { ExploreQueryFieldProps, AbsoluteTimeRange } from '@grafana/data';
+import { LokiQuery, LokiOptions } from '../types';
+import { Grammar } from 'prismjs';
+import LokiLanguageProvider, { LokiHistoryItem } from '../language_provider';
+import LokiDatasource from '../datasource';
 
-function getChooserText(hasSyntax: boolean, hasLogLabels: boolean, datasourceStatus: DataSourceStatus) {
-  if (datasourceStatus === DataSourceStatus.Disconnected) {
-    return '(Disconnected)';
-  }
+function getChooserText(hasSyntax: boolean, hasLogLabels: boolean) {
   if (!hasSyntax) {
     return 'Loading labels...';
   }
@@ -31,7 +34,7 @@ function getChooserText(hasSyntax: boolean, hasLogLabels: boolean, datasourceSta
   return 'Log labels';
 }
 
-function willApplySuggestion(suggestion: string, { typeaheadContext, typeaheadText }: QueryFieldState): string {
+function willApplySuggestion(suggestion: string, { typeaheadContext, typeaheadText }: SuggestionsState): string {
   // Modify suggestion based on context
   switch (typeaheadContext) {
     case 'context-labels': {
@@ -58,36 +61,28 @@ function willApplySuggestion(suggestion: string, { typeaheadContext, typeaheadTe
   return suggestion;
 }
 
-export interface CascaderOption {
-  label: string;
-  value: string;
-  children?: CascaderOption[];
-  disabled?: boolean;
-}
-
-export interface LokiQueryFieldFormProps extends ExploreQueryFieldProps<DataSourceApi<LokiQuery>, LokiQuery> {
-  history: HistoryItem[];
-  syntax: any;
-  logLabelOptions: any[];
-  syntaxLoaded: any;
+export interface LokiQueryFieldFormProps extends ExploreQueryFieldProps<LokiDatasource, LokiQuery, LokiOptions> {
+  history: LokiHistoryItem[];
+  syntax: Grammar;
+  logLabelOptions: CascaderOption[];
+  syntaxLoaded: boolean;
   absoluteRange: AbsoluteTimeRange;
   onLoadOptions: (selectedOptions: CascaderOption[]) => void;
   onLabelsRefresh?: () => void;
+  ExtraFieldElement?: ReactNode;
 }
 
 export class LokiQueryFieldForm extends React.PureComponent<LokiQueryFieldFormProps> {
-  plugins: any[];
-  modifiedSearch: string;
-  modifiedQuery: string;
+  plugins: Plugin[];
 
   constructor(props: LokiQueryFieldFormProps, context: React.Context<any>) {
     super(props, context);
 
     this.plugins = [
       BracesPlugin(),
-      PluginPrism({
-        onlyIn: (node: any) => node.type === 'code_block',
-        getSyntax: (node: any) => 'promql',
+      SlatePrism({
+        onlyIn: (node: Node) => node.object === 'block' && node.type === 'code_block',
+        getSyntax: (node: Node) => 'promql',
       }),
     ];
   }
@@ -118,86 +113,81 @@ export class LokiQueryFieldForm extends React.PureComponent<LokiQueryFieldFormPr
     }
   };
 
-  onTypeahead = (typeahead: TypeaheadInput): TypeaheadOutput => {
+  onTypeahead = async (typeahead: TypeaheadInput): Promise<TypeaheadOutput> => {
     const { datasource } = this.props;
+
     if (!datasource.languageProvider) {
       return { suggestions: [] };
     }
 
+    const lokiLanguageProvider = datasource.languageProvider as LokiLanguageProvider;
     const { history, absoluteRange } = this.props;
-    const { prefix, text, value, wrapperNode } = typeahead;
+    const { prefix, text, value, wrapperClasses, labelKey } = typeahead;
 
-    // Get DOM-dependent context
-    const wrapperClasses = Array.from(wrapperNode.classList);
-    const labelKeyNode = DOMUtil.getPreviousCousin(wrapperNode, '.attr-name');
-    const labelKey = labelKeyNode && labelKeyNode.textContent;
-    const nextChar = DOMUtil.getNextCharacter();
-
-    const result = datasource.languageProvider.provideCompletionItems(
+    const result = await lokiLanguageProvider.provideCompletionItems(
       { text, value, prefix, wrapperClasses, labelKey },
       { history, absoluteRange }
     );
 
-    console.log('handleTypeahead', wrapperClasses, text, prefix, nextChar, labelKey, result.context);
+    //console.log('handleTypeahead', wrapperClasses, text, prefix, nextChar, labelKey, result.context);
 
     return result;
   };
 
   render() {
     const {
-      queryResponse,
+      ExtraFieldElement,
+      data,
       query,
       syntaxLoaded,
       logLabelOptions,
       onLoadOptions,
       onLabelsRefresh,
       datasource,
-      datasourceStatus,
     } = this.props;
-    const cleanText = datasource.languageProvider ? datasource.languageProvider.cleanText : undefined;
+    const lokiLanguageProvider = datasource.languageProvider as LokiLanguageProvider;
+    const cleanText = datasource.languageProvider ? lokiLanguageProvider.cleanText : undefined;
     const hasLogLabels = logLabelOptions && logLabelOptions.length > 0;
-    const chooserText = getChooserText(syntaxLoaded, hasLogLabels, datasourceStatus);
-    const buttonDisabled = !syntaxLoaded || datasourceStatus === DataSourceStatus.Disconnected;
+    const chooserText = getChooserText(syntaxLoaded, hasLogLabels);
+    const buttonDisabled = !(syntaxLoaded && hasLogLabels);
+    const showError = data && data.error && data.error.refId === query.refId;
 
     return (
       <>
-        <div className="gf-form-inline">
-          <div className="gf-form">
-            <Cascader
-              options={logLabelOptions}
+        <div className="gf-form-inline gf-form-inline--nowrap flex-grow-1">
+          <div className="gf-form flex-shrink-0">
+            <ButtonCascader
+              options={logLabelOptions || []}
+              disabled={buttonDisabled}
               onChange={this.onChangeLogLabels}
               loadData={onLoadOptions}
-              onPopupVisibleChange={(isVisible: boolean) => {
-                if (isVisible && onLabelsRefresh) {
-                  onLabelsRefresh();
-                }
-              }}
+              onPopupVisibleChange={isVisible => isVisible && onLabelsRefresh && onLabelsRefresh()}
             >
-              <button className="gf-form-label gf-form-label--btn" disabled={buttonDisabled}>
-                {chooserText} <i className="fa fa-caret-down" />
-              </button>
-            </Cascader>
+              {chooserText}
+            </ButtonCascader>
           </div>
-          <div className="gf-form gf-form--grow">
+          <div className="gf-form gf-form--grow flex-shrink-1">
             <QueryField
               additionalPlugins={this.plugins}
               cleanText={cleanText}
-              initialQuery={query.expr}
+              query={query.expr}
               onTypeahead={this.onTypeahead}
               onWillApplySuggestion={willApplySuggestion}
               onChange={this.onChangeQuery}
+              onBlur={this.props.onBlur}
               onRunQuery={this.props.onRunQuery}
               placeholder="Enter a Loki query"
               portalOrigin="loki"
               syntaxLoaded={syntaxLoaded}
             />
           </div>
+          {ExtraFieldElement}
         </div>
-        <div>
-          {queryResponse && queryResponse.error ? (
-            <div className="prom-query-field-info text-error">{queryResponse.error.message}</div>
-          ) : null}
-        </div>
+        {showError ? (
+          <div className="query-row-break">
+            <div className="prom-query-field-info text-error">{data.error.message}</div>
+          </div>
+        ) : null}
       </>
     );
   }

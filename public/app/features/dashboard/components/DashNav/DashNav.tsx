@@ -1,22 +1,19 @@
 // Libaries
 import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
-
+import { e2e } from '@grafana/e2e';
 // Utils & Services
 import { appEvents } from 'app/core/app_events';
 import { PlaylistSrv } from 'app/features/playlist/playlist_srv';
-
 // Components
 import { DashNavButton } from './DashNavButton';
 import { DashNavTimeControls } from './DashNavTimeControls';
 import { Tooltip } from '@grafana/ui';
-
 // State
 import { updateLocation } from 'app/core/actions';
-
 // Types
 import { DashboardModel } from '../../state';
-import { StoreState } from 'app/types';
+import { CoreEvents, StoreState } from 'app/types';
 
 export interface OwnProps {
   dashboard: DashboardModel;
@@ -43,11 +40,11 @@ export class DashNav extends PureComponent<Props> {
   }
 
   onDahboardNameClick = () => {
-    appEvents.emit('show-dash-search');
+    appEvents.emit(CoreEvents.showDashSearch);
   };
 
   onFolderNameClick = () => {
-    appEvents.emit('show-dash-search', {
+    appEvents.emit(CoreEvents.showDashSearch, {
       query: 'folder:current',
     });
   };
@@ -67,7 +64,7 @@ export class DashNav extends PureComponent<Props> {
   };
 
   onToggleTVMode = () => {
-    appEvents.emit('toggle-kiosk-mode');
+    appEvents.emit(CoreEvents.toggleKioskMode);
   };
 
   onSave = () => {
@@ -112,7 +109,7 @@ export class DashNav extends PureComponent<Props> {
     modalScope.tabIndex = 0;
     modalScope.dashboard = this.props.dashboard;
 
-    appEvents.emit('show-modal', {
+    appEvents.emit(CoreEvents.showModal, {
       src: 'public/app/features/dashboard/components/ShareModal/template.html',
       scope: modalScope,
     });
@@ -160,7 +157,11 @@ export class DashNav extends PureComponent<Props> {
     return (
       <div className="navbar-edit">
         <Tooltip content="Go back (Esc)">
-          <button className="navbar-edit__back-btn" onClick={this.onClose}>
+          <button
+            className="navbar-edit__back-btn"
+            onClick={this.onClose}
+            aria-label={e2e.pages.Dashboard.Toolbar.selectors.backArrow}
+          >
             <i className="fa fa-arrow-left" />
           </button>
         </Tooltip>
@@ -169,7 +170,7 @@ export class DashNav extends PureComponent<Props> {
   }
 
   render() {
-    const { dashboard, onAddPanel, location, $injector } = this.props;
+    const { dashboard, onAddPanel, location } = this.props;
     const { canStar, canSave, canShare, showSettings, isStarred } = dashboard.meta;
     const { snapshot } = dashboard;
     const snapshotUrl = snapshot && snapshot.originalUrl;
@@ -263,12 +264,7 @@ export class DashNav extends PureComponent<Props> {
 
         {!dashboard.timepicker.hidden && (
           <div className="navbar-buttons">
-            <DashNavTimeControls
-              $injector={$injector}
-              dashboard={dashboard}
-              location={location}
-              updateLocation={updateLocation}
-            />
+            <DashNavTimeControls dashboard={dashboard} location={location} updateLocation={updateLocation} />
           </div>
         )}
       </div>
@@ -284,7 +280,4 @@ const mapDispatchToProps = {
   updateLocation,
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(DashNav);
+export default connect(mapStateToProps, mapDispatchToProps)(DashNav);

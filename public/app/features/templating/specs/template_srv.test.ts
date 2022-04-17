@@ -24,6 +24,35 @@ describe('templateSrv', () => {
       initTemplateSrv([{ type: 'query', name: 'test', current: { value: 'oogle' } }]);
     });
 
+    it('scoped vars should support objects', () => {
+      const target = _templateSrv.replace('${series.name} ${series.nested.field}', {
+        series: { value: { name: 'Server1', nested: { field: 'nested' } } },
+      });
+      expect(target).toBe('Server1 nested');
+    });
+
+    it('built in vars should support objects', () => {
+      _templateSrv.setGlobalVariable('__dashboard', {
+        value: { name: 'hello' },
+      });
+      const target = _templateSrv.replace('${__dashboard.name}');
+      expect(target).toBe('hello');
+    });
+
+    it('scoped vars should support objects with propert names with dot', () => {
+      const target = _templateSrv.replace('${series.name} ${series.nested["field.with.dot"]}', {
+        series: { value: { name: 'Server1', nested: { 'field.with.dot': 'nested' } } },
+      });
+      expect(target).toBe('Server1 nested');
+    });
+
+    it('scoped vars should support arrays of objects', () => {
+      const target = _templateSrv.replace('${series.rows[0].name} ${series.rows[1].name}', {
+        series: { value: { rows: [{ name: 'first' }, { name: 'second' }] } },
+      });
+      expect(target).toBe('first second');
+    });
+
     it('should replace $test with scoped value', () => {
       const target = _templateSrv.replace('this.$test.filters', {
         test: { value: 'mupp', text: 'asd' },
@@ -244,6 +273,14 @@ describe('templateSrv', () => {
       initTemplateSrv([{ type: 'query', name: 'test', current: { value: 'value/4' } }]);
       const target = _templateSrv.replace('this:${test:lucene}', {});
       expect(target).toBe('this:value\\/4');
+    });
+  });
+
+  describe('html format', () => {
+    it('should encode values html escape sequences', () => {
+      initTemplateSrv([{ type: 'query', name: 'test', current: { value: '<script>alert(asd)</script>' } }]);
+      const target = _templateSrv.replace('$test', {}, 'html');
+      expect(target).toBe('&lt;script&gt;alert(asd)&lt;/script&gt;');
     });
   });
 

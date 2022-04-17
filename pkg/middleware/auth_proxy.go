@@ -8,11 +8,7 @@ import (
 	"github.com/grafana/grafana/pkg/setting"
 )
 
-const (
-
-	// cachePrefix is a prefix for the cache key
-	cachePrefix = authproxy.CachePrefix
-)
+var header = setting.AuthProxyHeaderName
 
 var header = setting.AuthProxyHeaderName
 

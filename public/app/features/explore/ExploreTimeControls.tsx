@@ -3,27 +3,25 @@ import React, { Component } from 'react';
 
 // Types
 import { ExploreId } from 'app/types';
-import { TimeRange, TimeOption, TimeZone, RawTimeRange, dateTimeForTimeZone } from '@grafana/data';
+import { TimeRange, TimeZone, RawTimeRange, dateTimeForTimeZone } from '@grafana/data';
 
 // State
 
 // Components
-import { TimePicker, RefreshPicker, SetInterval } from '@grafana/ui';
+import { TimeSyncButton } from './TimeSyncButton';
+import { TimePickerWithHistory } from 'app/core/components/TimePicker/TimePickerWithHistory';
 
 // Utils & Services
-import { defaultSelectOptions } from '@grafana/ui/src/components/TimePicker/TimePicker';
 import { getShiftedTimeRange, getZoomedTimeRange } from 'app/core/utils/timePicker';
 
 export interface Props {
   exploreId: ExploreId;
-  hasLiveOption: boolean;
-  isLive: boolean;
-  loading: boolean;
+  hideText?: boolean;
   range: TimeRange;
-  refreshInterval: string;
   timeZone: TimeZone;
-  onRunQuery: () => void;
-  onChangeRefreshInterval: (interval: string) => void;
+  splitted: boolean;
+  syncedTimes: boolean;
+  onChangeTimeSync: () => void;
   onChangeTime: (range: RawTimeRange) => void;
 }
 
@@ -57,56 +55,25 @@ export class ExploreTimeControls extends Component<Props> {
     onChangeTime(nextTimeRange);
   };
 
-  setActiveTimeOption = (timeOptions: TimeOption[], rawTimeRange: RawTimeRange): TimeOption[] => {
-    return timeOptions.map(option => {
-      if (option.to === rawTimeRange.to && option.from === rawTimeRange.from) {
-        return {
-          ...option,
-          active: true,
-        };
-      }
-      return {
-        ...option,
-        active: false,
-      };
-    });
-  };
-
   render() {
-    const {
-      hasLiveOption,
-      isLive,
-      loading,
-      range,
-      refreshInterval,
+    const { range, timeZone, splitted, syncedTimes, onChangeTimeSync, hideText } = this.props;
+    const timeSyncButton = splitted ? <TimeSyncButton onClick={onChangeTimeSync} isSynced={syncedTimes} /> : undefined;
+    const timePickerCommonProps = {
+      value: range,
       timeZone,
-      onRunQuery,
-      onChangeRefreshInterval,
-    } = this.props;
+      onMoveBackward: this.onMoveBack,
+      onMoveForward: this.onMoveForward,
+      onZoom: this.onZoom,
+      hideText,
+    };
 
     return (
-      <>
-        {!isLive && (
-          <TimePicker
-            value={range}
-            onChange={this.onChangeTimePicker}
-            timeZone={timeZone}
-            onMoveBackward={this.onMoveBack}
-            onMoveForward={this.onMoveForward}
-            onZoom={this.onZoom}
-            selectOptions={this.setActiveTimeOption(defaultSelectOptions, range.raw)}
-          />
-        )}
-
-        <RefreshPicker
-          onIntervalChanged={onChangeRefreshInterval}
-          onRefresh={onRunQuery}
-          value={refreshInterval}
-          tooltip="Refresh"
-          hasLiveOption={hasLiveOption}
-        />
-        {refreshInterval && <SetInterval func={onRunQuery} interval={refreshInterval} loading={loading} />}
-      </>
+      <TimePickerWithHistory
+        {...timePickerCommonProps}
+        timeSyncButton={timeSyncButton}
+        isSynced={syncedTimes}
+        onChange={this.onChangeTimePicker}
+      />
     );
   }
 }

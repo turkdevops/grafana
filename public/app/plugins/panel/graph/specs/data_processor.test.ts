@@ -1,5 +1,5 @@
 import { DataProcessor } from '../data_processor';
-import { getProcessedDataFrames } from 'app/features/dashboard/state/PanelQueryState';
+import { getProcessedDataFrames } from 'app/features/dashboard/state/runRequest';
 
 describe('Graph DataProcessor', () => {
   const panel: any = {
@@ -14,7 +14,11 @@ describe('Graph DataProcessor', () => {
     const dataList = getProcessedDataFrames([
       {
         alias: 'First (time_series)',
-        datapoints: [[1, 1001], [2, 1002], [3, 1003]],
+        datapoints: [
+          [1, 1001],
+          [2, 1002],
+          [3, 1003],
+        ],
         unit: 'watt',
       },
       {

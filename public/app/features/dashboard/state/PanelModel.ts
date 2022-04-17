@@ -1,17 +1,29 @@
 // Libraries
 import _ from 'lodash';
-
 // Utils
 import { Emitter } from 'app/core/utils/emitter';
 import { getNextRefIdChar } from 'app/core/utils/query';
-
 // Types
-import { DataQuery, ScopedVars, DataQueryResponseData, PanelPlugin } from '@grafana/ui';
-import { DataLink } from '@grafana/data';
+import {
+  DataQuery,
+  DataQueryResponseData,
+  PanelPlugin,
+  PanelEvents,
+  DataLink,
+  DataTransformerConfig,
+  ScopedVars,
+} from '@grafana/data';
+import { AngularComponent } from '@grafana/runtime';
 
 import config from 'app/core/config';
 
 import { PanelQueryRunner } from './PanelQueryRunner';
+import { eventFactory } from '@grafana/data';
+import { take } from 'rxjs/operators';
+
+export const panelAdded = eventFactory<PanelModel | undefined>('panel-added');
+export const panelRemoved = eventFactory<PanelModel | undefined>('panel-removed');
+export const angularPanelUpdated = eventFactory('panel-angular-panel-updated');
 
 export interface GridPos {
   x: number;
@@ -26,10 +38,13 @@ const notPersistedProperties: { [str: string]: boolean } = {
   fullscreen: true,
   isEditing: true,
   isInView: true,
+  isNewEdit: true,
   hasRefreshed: true,
   cachedPluginOptions: true,
   plugin: true,
   queryRunner: true,
+  angularPanel: true,
+  restoreModel: true,
 };
 
 // For angular panels we need to clean up properties when changing type
@@ -66,17 +81,18 @@ const mustKeepProps: { [str: string]: boolean } = {
   transparent: true,
   pluginVersion: true,
   queryRunner: true,
+  transformations: true,
 };
 
 const defaults: any = {
   gridPos: { x: 0, y: 0, h: 3, w: 6 },
-  datasource: null,
   targets: [{ refId: 'A' }],
   cachedPluginOptions: {},
   transparent: false,
 };
 
 export class PanelModel {
+  /* persisted id, used in URL to identify a panel */
   id: number;
   gridPos: GridPos;
   type: string;
@@ -93,6 +109,7 @@ export class PanelModel {
   panels?: any;
   soloMode?: boolean;
   targets: DataQuery[];
+  transformations?: DataTransformerConfig[];
   datasource: string;
   thresholds?: any;
   pluginVersion?: string;
@@ -115,17 +132,27 @@ export class PanelModel {
   fullscreen: boolean;
   isEditing: boolean;
   isInView: boolean;
+  isNewEdit: boolean;
   hasRefreshed: boolean;
   events: Emitter;
   cacheTimeout?: any;
   cachedPluginOptions?: any;
   legend?: { show: boolean };
   plugin?: PanelPlugin;
+  angularPanel?: AngularComponent;
+
   private queryRunner?: PanelQueryRunner;
 
   constructor(model: any) {
     this.events = new Emitter();
+    // should not be part of defaults as defaults are removed in save model and
+    // this should not be removed in save model as exporter needs to templatize it
+    this.datasource = null;
+    this.restoreModel(model);
+  }
 
+  /** Given a persistened PanelModel restores property values */
+  restoreModel = (model: any) => {
     // copy properties from persisted model
     for (const property in model) {
       (this as any)[property] = model[property];
@@ -136,7 +163,7 @@ export class PanelModel {
 
     // queries must have refId
     this.ensureQueryIds();
-  }
+  };
 
   ensureQueryIds() {
     if (this.targets && _.isArray(this.targets)) {
@@ -154,6 +181,7 @@ export class PanelModel {
 
   updateOptions(options: object) {
     this.options = options;
+
     this.render();
   }
 
@@ -176,7 +204,7 @@ export class PanelModel {
   setViewMode(fullscreen: boolean, isEditing: boolean) {
     this.fullscreen = fullscreen;
     this.isEditing = isEditing;
-    this.events.emit('view-mode-changed');
+    this.events.emit(PanelEvents.viewModeChanged);
   }
 
   updateGridPos(newPos: GridPos) {
@@ -192,29 +220,29 @@ export class PanelModel {
     this.gridPos.h = newPos.h;
 
     if (sizeChanged) {
-      this.events.emit('panel-size-changed');
+      this.events.emit(PanelEvents.panelSizeChanged);
     }
   }
 
   resizeDone() {
-    this.events.emit('panel-size-changed');
+    this.events.emit(PanelEvents.panelSizeChanged);
   }
 
   refresh() {
     this.hasRefreshed = true;
-    this.events.emit('refresh');
+    this.events.emit(PanelEvents.refresh);
   }
 
   render() {
     if (!this.hasRefreshed) {
       this.refresh();
     } else {
-      this.events.emit('render');
+      this.events.emit(PanelEvents.render);
     }
   }
 
   initialized() {
-    this.events.emit('panel-initialized');
+    this.events.emit(PanelEvents.panelInitialized);
   }
 
   private getOptionsToRemember() {
@@ -241,7 +269,11 @@ export class PanelModel {
     if (plugin.angularConfigCtrl) {
       return;
     }
-    this.options = _.defaultsDeep({}, this.options || {}, plugin.defaults);
+    this.options = _.mergeWith({}, plugin.defaults, this.options || {}, (objValue: any, srcValue: any): any => {
+      if (_.isArray(srcValue)) {
+        return srcValue;
+      }
+    });
   }
 
   pluginLoaded(plugin: PanelPlugin) {
@@ -249,6 +281,7 @@ export class PanelModel {
 
     if (plugin.panel && plugin.onPanelMigration) {
       const version = getPluginVersion(plugin);
+
       if (version !== this.pluginVersion) {
         this.options = plugin.onPanelMigration(this);
         this.pluginVersion = version;
@@ -264,9 +297,8 @@ export class PanelModel {
     const oldPluginId = this.type;
     const wasAngular = !!this.plugin.angularPanelCtrl;
 
-    // for angular panels we must remove all events and let angular panels do some cleanup
-    if (wasAngular) {
-      this.destroy();
+    if (this.angularPanel) {
+      this.setAngularPanel(undefined);
     }
 
     // remove panel type specific  options
@@ -290,7 +322,6 @@ export class PanelModel {
       } else if (oldOptions && oldOptions.options) {
         old = oldOptions.options;
       }
-
       this.options = this.options || {};
       Object.assign(this.options, newPlugin.onPanelTypeChanged(this.options, oldPluginId, old));
     }
@@ -324,9 +355,24 @@ export class PanelModel {
     });
   }
 
+  getEditClone() {
+    const clone = new PanelModel(this.getSaveModel());
+    clone.queryRunner = new PanelQueryRunner();
+
+    // This will send the last result to the new runner
+    this.getQueryRunner()
+      .getData()
+      .pipe(take(1))
+      .subscribe(val => clone.queryRunner.pipeDataToSubject(val));
+
+    clone.isNewEdit = true;
+    return clone;
+  }
+
   getQueryRunner(): PanelQueryRunner {
     if (!this.queryRunner) {
       this.queryRunner = new PanelQueryRunner();
+      this.setTransformations(this.transformations);
     }
     return this.queryRunner;
   }
@@ -335,14 +381,36 @@ export class PanelModel {
     return this.title && this.title.length > 0;
   }
 
+  isAngularPlugin(): boolean {
+    return this.plugin && !!this.plugin.angularPanelCtrl;
+  }
+
   destroy() {
-    this.events.emit('panel-teardown');
     this.events.removeAllListeners();
 
     if (this.queryRunner) {
       this.queryRunner.destroy();
       this.queryRunner = null;
     }
+
+    if (this.angularPanel) {
+      this.angularPanel.destroy();
+    }
+  }
+
+  setTransformations(transformations: DataTransformerConfig[]) {
+    this.transformations = transformations;
+    this.getQueryRunner().setTransformations(transformations);
+  }
+
+  setAngularPanel(component: AngularComponent) {
+    if (this.angularPanel) {
+      // this will remove all event listeners
+      this.angularPanel.destroy();
+    }
+
+    this.angularPanel = component;
+    this.events.emit(angularPanelUpdated);
   }
 }
 

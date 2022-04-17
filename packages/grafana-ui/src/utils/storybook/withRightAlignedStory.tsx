@@ -1,5 +1,5 @@
 import React from 'react';
-import { RenderFunction } from '@storybook/react';
+import { RenderFunction } from '../../types';
 
 const RightAlignedStory: React.FunctionComponent<{}> = ({ children }) => {
   return (
@@ -17,4 +17,4 @@ const RightAlignedStory: React.FunctionComponent<{}> = ({ children }) => {
   );
 };
 
-export const withRighAlignedStory = (story: RenderFunction) => <RightAlignedStory>{story()}</RightAlignedStory>;
+export const withRightAlignedStory = (story: RenderFunction) => <RightAlignedStory>{story()}</RightAlignedStory>;
